@@ -1,9 +1,11 @@
 package com.wilson.demo;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.AsyncQueryHandler;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -21,6 +23,7 @@ import android.util.Log;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,7 +55,7 @@ public class BadgerUtil {
             badgeXiaomi(context, badgeCount);
         } else if (manufacturer.contains("sony")) {
             badgeSony(context, badgeCount);
-        } else if (manufacturer.contains("zuk")) {
+        } else if (manufacturer.contains("lenovo")) {
             badgeZuk(context, badgeCount);
         } else if (manufacturer.contains("samsung")) {
             badgeSamsung(context, badgeCount);
@@ -67,40 +70,6 @@ public class BadgerUtil {
         }
     }
 
-    public static void addBadger2(Context context, int badgeCount,String title,String msg) {
-        if (TextUtils.isEmpty(getLauncherClassName(context))) {
-            Log.e(TAG, "launcherClassName==null");
-            return;
-        }
-
-        badgeCount = Math.min(Math.abs(badgeCount), 99);
-        String manufacturer = Build.MANUFACTURER.toLowerCase();
-        if (TextUtils.isEmpty(manufacturer)) {
-            return;
-        }
-
-       Notification notification = getNotification2(context,badgeCount,title,msg);
-
-        if (manufacturer.contains("huawei")) {
-            badgeHuawei(context, badgeCount);
-        } else if (manufacturer.contains("xiaomi")) {
-            badgeXiaomi2(context, badgeCount,notification);
-        } else if (manufacturer.contains("sony")) {
-            badgeSony(context, badgeCount);
-        } else if (manufacturer.contains("zuk")) {
-            badgeZuk(context, badgeCount);
-        } else if (manufacturer.contains("samsung")) {
-            badgeSamsung(context, badgeCount);
-        } else if (manufacturer.contains("htc")) {
-            badgeHtc(context, badgeCount);
-        } else if (manufacturer.contains("vivo")) {
-            badgeVivo(context, badgeCount);
-        } else if (manufacturer.contains("oppo")) {
-            badgeOppo(context, badgeCount);
-        } else {
-            badgeDefault(context, badgeCount);
-        }
-    }
 
     /**
      * 默认
@@ -212,9 +181,23 @@ public class BadgerUtil {
      * <uses-permission android:name="android.permission.READ_APP_BADGE"/>
      */
     private static void badgeZuk(Context context, int badgeCount) {
-        Bundle extra = new Bundle();
-        extra.putInt("app_badge_count", badgeCount);
-        context.getContentResolver().call(Uri.parse("content://com.android.badge/badge"), "setAppBadgeCount", null, extra);
+        try {
+            Bundle extra = new Bundle();
+            ArrayList<String> ids = new ArrayList<>();
+            extra.putStringArrayList("app_shortcut_custom_id", ids);
+            extra.putInt("app_badge_count", badgeCount);
+            Uri contentUri = Uri.parse("content://com.android.badge/badge");
+             context.getContentResolver().call(contentUri, "setAppBadgeCount", null,
+                    extra);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean canResolveBroadcast(Context context, Intent intent) {
+        PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> receivers = packageManager.queryBroadcastReceivers(intent, 0);
+        return receivers != null && receivers.size() > 0;
     }
 
     /**

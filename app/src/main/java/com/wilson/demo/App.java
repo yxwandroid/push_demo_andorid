@@ -104,7 +104,9 @@ public class App extends Application implements Application.ActivityLifecycleCal
                 if (TextUtils.isEmpty(manufacturer)) {
                     return;
                 }
-                if (manufacturer.contains("huawei")) {
+                if (manufacturer.contains("xiaomi")) {
+                   return;
+                }else{
                     count++;
                     BadgerUtil.addBadger(context, count);
                 }

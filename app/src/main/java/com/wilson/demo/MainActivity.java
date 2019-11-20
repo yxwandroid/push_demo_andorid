@@ -4,7 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
+
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,9 +19,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.textView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.d("wilson","点击"+num);
-//                App.count =  num;
-//                num++;
+                BadgerUtil.addBadger(MainActivity.this, 222);
+                Log.d("wilson","点击");
             }
         });
     }
